@@ -30,7 +30,7 @@
                 <div class="collapse navbar-collapse" id="collapsibleNavId">
                     <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
                         <li class="nav-item active">
-                            <a class="nav-link" href="{% url 'home' %}">Home <span class="sr-only"></span></a>
+                            <a class="nav-link" href="{% url "home" %}">Home <span class="sr-only"></span></a>
                         </li>
                         {% if request.user.is_authenticated %}
                             {% if request.user.user_type == 'I' %} {# Changed from E #}
@@ -77,7 +77,7 @@
                         </li>
                     {% else %}
                         <p class="my-auto me-2"> Welcome {{request.user.username}}</p>
-                        <a class="btn btn-warning" href="{% url 'logout' %}">Logout</a>
+                        <a class="btn btn-warning" href="{% url "logout" %}">Logout</a>
                     {% endif %}
                 </ul>
              </nav>

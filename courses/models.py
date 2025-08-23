@@ -69,3 +69,4 @@ class RejectedEnrollment(models.Model):
 
     def __str__(self):
         return f"Rejected: {self.enrollment.student.username} for {self.enrollment.course.title}"
+

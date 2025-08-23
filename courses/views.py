@@ -80,11 +80,13 @@ def accept_enrollment(request, enrollment_id):
         messages.error(request, "You can only manage enrollments for your own courses.")
         return redirect('my_courses')
     
-    AcceptedEnrollment.objects.create(enrollment=enrollment)
-    EnrolledCourse.objects.create(
-        student=enrollment.student,
-        course=enrollment.course
-    )
+    # Update enrollment status
+    enrollment.status = 'accepted'
+    enrollment.save()
+    
+    # Create EnrolledCourse entry if not already exists
+    EnrolledCourse.objects.get_or_create(student=enrollment.student, course=enrollment.course)
+    
     messages.success(request, f"Enrollment accepted for {enrollment.student.username}")
     return redirect('view_enrollments', course_id=enrollment.course.id)
 
@@ -99,8 +101,10 @@ def reject_enrollment(request, enrollment_id):
         messages.error(request, "You can only manage enrollments for your own courses.")
         return redirect('my_courses')
     
+    # Update enrollment status
+    enrollment.status = 'rejected'
+    enrollment.save()
     
-    RejectedEnrollment.objects.create(enrollment=enrollment)
     messages.success(request, f"Enrollment rejected for {enrollment.student.username}")
     return redirect('view_enrollments', course_id=enrollment.course.id)
 
@@ -188,43 +192,4 @@ def toggle_save_course(request, course_id):
         messages.success(request, "Course saved successfully!")
     
     return redirect('course_detail', course_id=course_id)
-
-@login_required
-def accept_enrollment(request, enrollment_id):
-    if not is_instructor(request.user):
-        messages.error(request, "Only instructors can accept enrollments.")
-        return redirect('home')
-    
-    enrollment = get_object_or_404(Enrollment, id=enrollment_id)
-    if enrollment.course.instructor != request.user:
-        messages.error(request, "You can only manage enrollments for your own courses.")
-        return redirect('my_courses')
-    
- 
-    enrollment.status = 'accepted'
-    enrollment.save()
-    
-  
-    EnrolledCourse.objects.get_or_create(student=enrollment.student, course=enrollment.course)
-    
-    messages.success(request, f"Enrollment accepted for {enrollment.student.username}")
-    return redirect('view_enrollments', course_id=enrollment.course.id)
-
-@login_required
-def reject_enrollment(request, enrollment_id):
-    if not is_instructor(request.user):
-        messages.error(request, "Only instructors can reject enrollments.")
-        return redirect('home')
-    
-    enrollment = get_object_or_404(Enrollment, id=enrollment_id)
-    if enrollment.course.instructor != request.user:
-        messages.error(request, "You can only manage enrollments for your own courses.")
-        return redirect('my_courses')
-    
-    
-    enrollment.status = 'rejected'
-    enrollment.save()
-    
-    messages.success(request, f"Enrollment rejected for {enrollment.student.username}")
-    return redirect('view_enrollments', course_id=enrollment.course.id)
 

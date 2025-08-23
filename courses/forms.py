@@ -16,3 +16,4 @@ class EnrollmentForm(ModelForm):
     class Meta:
         model = Enrollment
         fields = ['notes'] 
+

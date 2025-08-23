@@ -56,3 +56,4 @@ class InstructorProfile(models.Model):
         blank=True,
         null=True,
     )
+

@@ -30,3 +30,4 @@ class InstructorProfileForm(forms.ModelForm):
         widgets = {
             'profile_photo': forms.FileInput(attrs={'accept': 'image/*'}),
         }
+
