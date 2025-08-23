@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block main %}
+<div class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+      <h2>Enrollments for "{{ course.title }}"</h2>
+    </div>
+    <div class="card-body">
+      {% if enrollments %}
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Student Name</th>
+                <th>Enrollment Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for enrollment in enrollments %}
+              <tr>
+                <td>{{ enrollment.student.username }}</td>
+                <td>{{ enrollment.created_at|date:"M d, Y" }}</td>
+                <td>
+                  {% if enrollment.is_accepted %}
+                    <span class="badge bg-success">Accepted</span>
+                  {% else %}
+                    <span class="badge bg-warning">Pending</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if not enrollment.is_accepted %}
+                  <form action="{% url 'accept_enrollment' enrollment.id %}" method="POST" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-success">Accept</button>
+                  </form>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="text-center">No enrollments yet.</p>
+      {% endif %}
+      <a href="{% url 'my_courses' %}" class="btn btn-secondary">Back to My Courses</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

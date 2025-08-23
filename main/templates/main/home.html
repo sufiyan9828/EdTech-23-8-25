@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block main %}
+{% load static %}
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Portal</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #fff;
+      color: #333;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 40px;
+      background: #f9f9f9;
+    }
+    header h1 {
+      color: #0044cc;
+      margin: 0;
+    }
+    .header-left {
+      flex: 1;
+    }
+    .header-right {
+      flex: 1;
+      text-align: center;
+    }
+    .btn {
+      padding: 10px 20px;
+      margin: 5px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    .btn-login {
+      background: #0044cc;
+      color: #fff;
+    }
+    .btn-signup {
+      background: #fff;
+      color: #0044cc;
+      border: 2px solid #0044cc;
+    }
+    section {
+      padding: 40px 20px;
+      text-align: center;
+    }
+    section h2 {
+      color: #0044cc;
+      margin-bottom: 20px;
+    }
+    .features {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .feature-box {
+      border: 2px solid #0044cc;
+      padding: 20px;
+      border-radius: 10px;
+      width: 120px;
+      font-weight: bold;
+      background: #f0f6ff;
+    }
+    .steps {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    .step-box {
+      border: 2px solid #0044cc;
+      padding: 20px;
+      border-radius: 10px;
+      width: 250px;
+      height: 150px;
+      background: #f0f6ff;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="header-left">
+      <h1>WELCOME to JobPortal</h1>
+      <p>"Dialogue"</p>
+      <a href = "{% url "login" %}"><button class="btn btn-login">Login</button></a>
+      <a href = "{% url "login" %}"><button class="btn btn-signup">Signup</button></a>
+    </div>
+    <div class="header-right">
+      <img src="{% static "images/hand.jpg" %}" alt="Job Image" style="max-width:100%; border-radius:10px;">
+    </div>
+  </header>
+
+  <!-- Introduction -->
+  <section>
+    <h2>Introduction</h2>
+    <p>
+      Welcome to our Job Portal where you can find the best opportunities that suit your skills. 
+      Start your journey towards your dream job today!
+    </p>
+  </section>
+
+  <!-- About Us - Features -->
+  <section>
+    <h2>About Us - Features</h2>
+    <div class="features">
+      <div class="feature-box">Free</div>
+      <div class="feature-box">Trusted</div>
+      <div class="feature-box">Fast</div>
+    </div>
+  </section>
+
+  <!-- Find Your Dream Job -->
+  <section>
+    <h2>Find Your Dream Job</h2>
+    <div class="steps">
+      <div class="step-box">Step 1: Signup</div>
+      <div class="step-box">Step 2: Search Jobs</div>
+      <div class="step-box">Step 3: Apply for Job</div>
+      <div class="step-box">Step 4: Get Hired</div>
+    </div>
+  </section>
+
+</body>
+</html>
+ {% endcomment %}
+
+{% endblock main %}

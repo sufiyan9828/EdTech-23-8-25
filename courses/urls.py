@@ -1,0 +1,17 @@
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('create/', views.course_create, name='course_create'),
+    path('my-courses/', views.my_courses, name='my_courses'),
+    path('<int:course_id>/enrollments/', views.view_enrollments, name='view_enrollments'),
+    path('enrollments/<int:enrollment_id>/', views.enrollment_details, name='enrollment_details'),
+    path('enrollments/<int:enrollment_id>/accept/', views.accept_enrollment, name='accept_enrollment'),
+    path('enrollments/<int:enrollment_id>/reject/', views.reject_enrollment, name='reject_enrollment'),
+    path('', views.course_list, name='course_list'),
+    path('<int:course_id>/', views.course_detail, name='course_detail'),
+    path('<int:course_id>/enroll/', views.enroll_course, name='enroll_course'),
+    path('my-enrollments/', views.my_enrolled_courses, name='my_enrolled_courses'),
+    path('saved/', views.saved_courses, name='saved_courses'),
+    path('<int:course_id>/toggle-save/', views.toggle_save_course, name='toggle_save_course'),
+]
