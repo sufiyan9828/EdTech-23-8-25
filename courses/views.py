@@ -214,17 +214,20 @@ def toggle_save_course(request, course_id):
     return redirect('course_detail', course_id=course_id)
 
 
-def module_content(request,course_id,module_id):    
-    if not is_instructor(request.user):
-        messages.error(request, "Only instructors can manage Module.")
-        return redirect('home')
-    
-    course = get_object_or_404(Course,id=course_id,instructor = request.user)
-    modules = course.modules.all()
+def module_content(request,course_id):
+    course = get_object_or_404(Course,id=course_id)
+    if request.user == course.instructor:
+        pass
+
+    else:
+        enrollment = Enrollment.objects.filter(course=course, student=request.user, status="accepted").first()
+        if not enrollment:
+            messages.success(request,f"You are not enrolled in this course")
+            return render(request,"courses/course_detail.html",course_id=course.id)
     modules = course.modules.prefetch_related("lessons").all()
     context = {
         'course':course,
-        'modules': modules,
+        'modules': modules
     }
     return render(request,"courses/module_content.html",context)
         
@@ -243,7 +246,7 @@ def add_module(request,course_id):
             module.course = course
             module.save()
             messages.success(request,f"Module added successfully")
-            return redirect('course_detail',course_id=course.id)
+            return redirect('module_content',course_id=course.id)
             
         else:
             messages.error(request,f"Module not added, Try Again")
@@ -282,8 +285,3 @@ def add_lesson(request,module_id):
             'module': module
         }
         return render(request,"courses/add_lesson.html",context)
-
-            
-            
-
-    
