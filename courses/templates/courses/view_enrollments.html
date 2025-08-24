@@ -13,7 +13,7 @@
               <tr>
                 <th>Student Name</th>
                 <th>Enrollment Date</th>
-                <th>Status</th> {# Added Status column #}
+                <th>Status</th> 
                 <th>Actions</th>
               </tr>
             </thead>
@@ -21,9 +21,9 @@
               {% for enrollment in enrollments %}
               <tr>
                 <td>{{ enrollment.student.username }}</td>
-                <td>{{ enrollment.enrollment_date|date:"M d, Y" }}</td> {# Changed from created_at to enrollment_date #}
+                <td>{{ enrollment.enrollment_date|date:"M d, Y" }}</td>
                 <td>
-                  {% if enrollment.status == 'accepted' %} {# Check enrollment.status #}
+                  {% if enrollment.status == 'accepted' %} 
                     <span class="badge bg-success">Accepted</span>
                   {% elif enrollment.status == 'rejected' %}
                     <span class="badge bg-danger">Rejected</span>
@@ -32,12 +32,12 @@
                   {% endif %}
                 </td>
                 <td>
-                  {% if enrollment.status == 'pending' %} {# Only show buttons if status is pending #}
-                  <form action="{% url 'accept_enrollment' enrollment.id %}" method="post" class="d-inline">
+                  {% if enrollment.status == 'pending' %}
+                  <form action="{% url 'accept_enrollment' enrollment.id %}" method="POST" class="d-inline">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-sm btn-success">Accept</button>
                   </form>
-                  <form action="{% url 'reject_enrollment' enrollment.id %}" method="post" class="d-inline ms-2"> {# Added reject button #}
+                  <form action="{% url 'reject_enrollment' enrollment.id %}" method="POST" class="d-inline ms-2"> {# Added reject button #}
                     {% csrf_token %}
                     <button type="submit" class="btn btn-sm btn-danger">Reject</button>
                   </form>

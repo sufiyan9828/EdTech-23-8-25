@@ -17,8 +17,8 @@
             </div>
             <p class="mb-1">{{ course.description|truncatewords:20 }}</p>
             <small class="text-muted">
-                {% if course.enrollments.count > 0 %}
-                    {{ course.enrollments.count }} pending enrollments 
+                {% if course.pending_count %}
+                    {{ course.pending_count }} pending enrollments 
                 {% else %}
                     No pending enrollments yet
                 {% endif %}

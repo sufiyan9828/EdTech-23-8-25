@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Course, Enrollment, SavedCourse, EnrolledCourse, AcceptedEnrollment, RejectedEnrollment
-from .forms import CoursePostingForm, EnrollmentForm
+from .models import Course, Enrollment, SavedCourse,Module,Lesson
+from .forms import CoursePostingForm, EnrollmentForm,ModuleForm,LessonForm
 
 def is_instructor(user):
     return user.is_authenticated and user.user_type == 'I'
@@ -36,7 +36,12 @@ def my_courses(request):
         return redirect('home')
     
     courses = Course.objects.filter(instructor=request.user)
-    return render(request, 'courses/my_courses.html', {'courses': courses})
+    pending_count = Enrollment.objects.filter(status = 'pending').count()
+    context = {
+        'pending_count': pending_count,
+        'courses': courses
+    }
+    return render(request, 'courses/my_courses.html',context)
 
 @login_required
 def view_enrollments(request, course_id):
@@ -76,19 +81,20 @@ def accept_enrollment(request, enrollment_id):
         return redirect('home')
     
     enrollment = get_object_or_404(Enrollment, id=enrollment_id)
+    
     if enrollment.course.instructor != request.user:
         messages.error(request, "You can only manage enrollments for your own courses.")
         return redirect('my_courses')
     
-    # Update enrollment status
-    enrollment.status = 'accepted'
-    enrollment.save()
+    if enrollment.status != 'accepted':
+        enrollment.status = 'accepted'
+        enrollment.save()
+        messages.success(request, f"Enrollment accepted for {enrollment.student.username}")
+    else:
+        messages.info(request, f"{enrollment.student.username} is already accepted.")
     
-    # Create EnrolledCourse entry if not already exists
-    EnrolledCourse.objects.get_or_create(student=enrollment.student, course=enrollment.course)
-    
-    messages.success(request, f"Enrollment accepted for {enrollment.student.username}")
     return redirect('view_enrollments', course_id=enrollment.course.id)
+
 
 @login_required
 def reject_enrollment(request, enrollment_id):
@@ -97,15 +103,18 @@ def reject_enrollment(request, enrollment_id):
         return redirect('home')
     
     enrollment = get_object_or_404(Enrollment, id=enrollment_id)
+    
     if enrollment.course.instructor != request.user:
         messages.error(request, "You can only manage enrollments for your own courses.")
         return redirect('my_courses')
     
-    # Update enrollment status
-    enrollment.status = 'rejected'
-    enrollment.save()
+    if enrollment.status != 'rejected':
+        enrollment.status = 'rejected'
+        enrollment.save()
+        messages.success(request, f"Enrollment rejected for {enrollment.student.username}")
+    else:
+        messages.info(request, f"{enrollment.student.username} is already rejected.")
     
-    messages.success(request, f"Enrollment rejected for {enrollment.student.username}")
     return redirect('view_enrollments', course_id=enrollment.course.id)
 
 def course_list(request):
@@ -116,14 +125,22 @@ def course_list(request):
 def course_detail(request, course_id):
     course = get_object_or_404(Course, id=course_id)
     is_saved = False
-    
+    enrollment_status = None
+
     if request.user.is_authenticated and request.user.user_type == 'S':
         is_saved = SavedCourse.objects.filter(student=request.user, course=course).exists()
-    
-    return render(request, 'courses/course_detail.html', {
+        enrollment = Enrollment.objects.filter(student=request.user, course=course).first()
+        if enrollment:
+            enrollment_status = enrollment.status 
+
+    context = {
         'course': course,
-        'is_saved': is_saved
-    })
+        'is_saved': is_saved,
+        'enrollment_status': enrollment_status,
+    }
+    return render(request, 'courses/course_detail.html', context)
+
+
 
 @login_required
 def enroll_course(request, course_id):
@@ -132,28 +149,31 @@ def enroll_course(request, course_id):
         return redirect('home')
     
     course = get_object_or_404(Course, id=course_id)
-    
+    enrollment, created = Enrollment.objects.get_or_create(student=request.user, course=course)
 
-    existing_enrollment = Enrollment.objects.filter(student=request.user, course=course).first()
-    if existing_enrollment:
-        messages.warning(request, "You have already applied for this course!")
+    if not created:
+        if enrollment.status == 'accepted':
+            messages.info(request, "You are already enrolled in this course!")
+        elif enrollment.status == 'pending':
+            messages.warning(request, "You have already applied for this course!")
+        elif enrollment.status == 'rejected':
+            messages.warning(request, "Your previous enrollment was rejected. You can re-apply.")
         return redirect('course_detail', course_id=course_id)
     
     if request.method == 'POST':
-        form = EnrollmentForm(request.POST)
+        form = EnrollmentForm(request.POST, instance=enrollment)
         if form.is_valid():
-            enrollment = form.save(commit=False)
-            enrollment.student = request.user
-            enrollment.course = course
+            enrollment.status = 'pending'
             enrollment.save()
             messages.success(request, "Your enrollment request has been submitted!")
             return redirect('course_detail', course_id=course.id)
         else:
             messages.error(request, "Error submitting enrollment. Please check the form.")
     else:
-        form = EnrollmentForm()
+        form = EnrollmentForm(instance=enrollment)
     
     return render(request, 'courses/enroll_course.html', {'course': course, 'form': form})
+
 
 @login_required
 def my_enrolled_courses(request):
@@ -161,7 +181,7 @@ def my_enrolled_courses(request):
         messages.error(request, "Only students can view enrolled courses.")
         return redirect('home')
     
-    enrolled_courses = EnrolledCourse.objects.filter(student=request.user)
+    enrolled_courses = Enrollment.objects.filter(student=request.user)
     return render(request, 'courses/my_enrolled_courses.html', {'enrolled_courses': enrolled_courses})
 
 @login_required
@@ -193,3 +213,77 @@ def toggle_save_course(request, course_id):
     
     return redirect('course_detail', course_id=course_id)
 
+
+def module_content(request,course_id,module_id):    
+    if not is_instructor(request.user):
+        messages.error(request, "Only instructors can manage Module.")
+        return redirect('home')
+    
+    course = get_object_or_404(Course,id=course_id,instructor = request.user)
+    modules = course.modules.all()
+    modules = course.modules.prefetch_related("lessons").all()
+    context = {
+        'course':course,
+        'modules': modules,
+    }
+    return render(request,"courses/module_content.html",context)
+        
+@login_required
+def add_module(request,course_id):
+    if not is_instructor(request.user):
+        messages.error(request, "Only instructors can Create Module.")
+        return redirect('home')
+    
+    course = get_object_or_404(Course,id=course_id,instructor=request.user)
+
+    if request.method == 'POST':
+        form = ModuleForm(request.POST)
+        if form.is_valid():
+            module = form.save(commit=False)
+            module.course = course
+            module.save()
+            messages.success(request,f"Module added successfully")
+            return redirect('course_detail',course_id=course.id)
+            
+        else:
+            messages.error(request,f"Module not added, Try Again")
+    else:
+        form = ModuleForm()
+
+    context = {
+        'form': form,
+        'course': course
+    }
+    return render(request,'courses/add_module.html',context)
+
+
+def add_lesson(request,module_id):
+    if not is_instructor(request.user):
+        messages.error(request, "Only instructors can manage Module.")
+        return redirect('home')
+    
+    module = get_object_or_404(Module, id=module_id, course__instructor=request.user)
+
+    if request.method == "POST":
+        form = LessonForm(request.POST,request.FILES)
+        if form.is_valid():
+            lesson = form.save(commit=False)
+            lesson.module = module
+            lesson.save()
+            messages.success(request,f"Lesson Added Successfully")
+            return redirect('module_content',course_id = module.course.id)
+        else:
+            messages.error(request,f"Lesson not added, Try Again")
+    else:
+        form = LessonForm()
+        
+        context = {
+            'form': form,
+            'module': module
+        }
+        return render(request,"courses/add_lesson.html",context)
+
+            
+            
+
+    

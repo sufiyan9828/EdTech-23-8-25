@@ -1,0 +1,58 @@
+{# templates/courses/module_content.html #}
+{% extends 'base.html' %}
+{% block main %}
+<div class="container py-5">
+  <div class="card text-start">
+    <div class="card-body">
+      <div class="d-flex justify-content-between shadow-sm mb-2">
+        <h2>Modules for {{ course.title }}</h2>
+        <a href="{% url 'add_module' course.id %}" class="btn btn-success mb-3">Add Module</a>
+      </div>
+
+      <div class="card shadow-sm text-start">
+        <div class="card-body">
+          {% for module in modules %}
+            <div class="d-flex justify-content-between">
+              <div>
+                <h4 class="mb-1">{{ module.title|default:"(Untitled module)" }}</h4>
+                <p class="text-muted">{{ module.description|default:"No description." }}</p>
+              </div>
+              <div>
+                <a href="{% url 'add_lesson' module.id %}" class="btn btn-primary">Add Lesson</a>
+              </div>
+            </div>
+
+            <div class="mt-2">
+              <ul class="mb-4">
+                {% for lesson in module.lessons.all %}
+                  <li>
+                    <strong>{{ lesson.title }}</strong>
+                    {% if lesson.content %}
+                      <div class="small text-muted">{{ lesson.content|truncatechars:120 }}</div>
+                    {% endif %}
+
+                    {# Optionally show type-specific link/info #}
+                    {% if lesson.content_type == 'V' and lesson.video_url %}
+                      <div><a href="{{ lesson.video_url }}" target="_blank">Watch video</a></div>
+                    {% elif lesson.content_type == 'A' and lesson.assessment_url %}
+                      <div><a href="{{ lesson.assessment_url }}" target="_blank">Open assessment</a></div>
+                    {% elif lesson.content_type == 'D' and lesson.document %}
+                      <div><a href="{{ lesson.document.url }}" target="_blank">Download document</a></div>
+                    {% endif %}
+                  </li>
+                {% empty %}
+                  <li>No lessons yet</li>
+                {% endfor %}
+              </ul>
+            </div>
+
+            <hr>
+          {% empty %}
+            <p>No modules yet. Click “Add Module” to create one.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

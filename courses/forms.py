@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django import forms
-from .models import Course, Enrollment 
+from .models import Course, Enrollment, Module, Lesson
 
 class CoursePostingForm(forms.ModelForm):
     class Meta:
@@ -17,3 +17,12 @@ class EnrollmentForm(ModelForm):
         model = Enrollment
         fields = ['notes'] 
 
+class ModuleForm(ModelForm):
+    class Meta:
+        model = Module
+        fields = ['title','description']
+
+class LessonForm(ModelForm):
+    class Meta:
+        model = Lesson
+        fields = ['title','content','content_type','video_url','assessment_url','document']
