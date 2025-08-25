@@ -154,11 +154,30 @@ def enroll_course(request, course_id):
     if not created:
         if enrollment.status == 'accepted':
             messages.info(request, "You are already enrolled in this course!")
+            return redirect('course_detail', course_id=course_id)
+
         elif enrollment.status == 'pending':
             messages.warning(request, "You have already applied for this course!")
+            return redirect('course_detail', course_id=course_id)
         elif enrollment.status == 'rejected':
-            messages.warning(request, "Your previous enrollment was rejected. You can re-apply.")
-        return redirect('course_detail', course_id=course_id)
+            if request.method == 'POST':
+                form = EnrollmentForm(request.POST, instance=enrollment)
+                if form.is_valid():
+                    enrollment.status = 'pending'
+                    enrollment.save()
+                    messages.success(request, "Your enrollment request has been submitted!")
+                    return redirect('course_detail', course_id=course.id)
+                else:
+                    messages.error(request, "Error submitting enrollment. Please check the form.")
+            else:
+                form = EnrollmentForm(instance=enrollment)
+            
+            context = {
+                'course': course,
+                'form': form
+            }
+            return render(request, 'courses/enroll_course.html',context)
+            
     
     if request.method == 'POST':
         form = EnrollmentForm(request.POST, instance=enrollment)
@@ -172,7 +191,11 @@ def enroll_course(request, course_id):
     else:
         form = EnrollmentForm(instance=enrollment)
     
-    return render(request, 'courses/enroll_course.html', {'course': course, 'form': form})
+    context = {
+        'course': course,
+        'form': form
+    }
+    return render(request, 'courses/enroll_course.html',context)
 
 
 @login_required
