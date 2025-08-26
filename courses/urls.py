@@ -16,5 +16,7 @@ urlpatterns = [
     path('<int:course_id>/toggle-save/', views.toggle_save_course, name='toggle_save_course'),
     path('module-content/<int:course_id>/', views.module_content, name='module_content'),   
     path('add-module/<int:course_id>/', views.add_module, name='add_module'),
-    path('add-lesson/<int:module_id>/', views.add_lesson, name='add_lesson'),   
+    path('add-lesson/<int:module_id>/', views.add_lesson, name='add_lesson'),
+    path('lesson/<int:lesson_id>/complete/', views.mark_lesson_completed, name='mark_lesson_completed'),
+
 ]

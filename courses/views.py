@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Course, Enrollment, SavedCourse,Module,Lesson
+from django.utils import timezone
+from .models import Course, Enrollment, SavedCourse,Module,Lesson,CourseComplete
 from .forms import CoursePostingForm, EnrollmentForm,ModuleForm,LessonForm
 
 def is_instructor(user):
@@ -239,18 +240,26 @@ def toggle_save_course(request, course_id):
 
 def module_content(request,course_id):
     course = get_object_or_404(Course,id=course_id)
-    if request.user == course.instructor:
-        pass
 
-    else:
+    if is_student(request.user) and timezone.now().date() > course.end_date:
+        messages.error(request,f"This Course has Ended, You Can not see its content")
+        return redirect('course_detail',course_id=course.id)
+    
+    completed_lessons = []
+    if is_student(request.user):
+        completion = CourseComplete.objects.filter(student = request.user)
+        for c in completion:
+            completed_lessons.append(c.lesson.id)
+
         enrollment = Enrollment.objects.filter(course=course, student=request.user, status="accepted").first()
         if not enrollment:
             messages.success(request,f"You are not enrolled in this course")
-            return render(request,"courses/course_detail.html",course_id=course.id)
+            return redirect('course_detail', course_id=course.id)
     modules = course.modules.prefetch_related("lessons").all()
     context = {
         'course':course,
-        'modules': modules
+        'modules': modules,
+        'completed_lessons': completed_lessons
     }
     return render(request,"courses/module_content.html",context)
         
@@ -308,3 +317,15 @@ def add_lesson(request,module_id):
             'module': module
         }
         return render(request,"courses/add_lesson.html",context)
+    
+def mark_lesson_completed(request,lesson_id):
+    if not is_student(request.user):
+        messages.error(request,f"Only Students can Complete Course")
+        return redirect('home')
+    
+    lesson = get_object_or_404(Lesson,id=lesson_id)
+
+    CourseComplete.objects.get_or_create(student = request.user, lesson = lesson)
+    messages.success(request,f"Marked {lesson.title}-Completed")
+    return redirect('module_content',course_id = lesson.module.course.id)
+

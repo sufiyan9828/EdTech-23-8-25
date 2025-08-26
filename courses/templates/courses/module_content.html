@@ -35,13 +35,19 @@
                 <div class="small text-muted">{{ lesson.content|truncatechars:120 }}</div>
                 {% endif %}
 
-                {# Optionally show type-specific link/info #}
                 {% if lesson.content_type == 'V' and lesson.video_url %}
                 <div><a href="{{ lesson.video_url }}" target="_blank">Watch video</a></div>
                 {% elif lesson.content_type == 'A' and lesson.assessment_url %}
                 <div><a href="{{ lesson.assessment_url }}" target="_blank">Open assessment</a></div>
                 {% elif lesson.content_type == 'D' and lesson.document %}
                 <div><a href="{{ lesson.document.url }}" target="_blank">Download document</a></div>
+                {% endif %}
+                {% if user.is_authenticated and user.user_type == 'S' %}
+                {% if lesson.id in completed_lessons %}
+                <span class="btn btn-success">Completed</span>
+                {% else %}
+                <a href="{% url 'mark_lesson_completed' lesson.id %}" class="btn btn-sm btn-success">Mark Complete</a> 
+                {% endif %}
                 {% endif %}
               </li>
               {% empty %}

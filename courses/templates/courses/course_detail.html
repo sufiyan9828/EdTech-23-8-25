@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block main %}
+{% now "y-m-d" as today %}
 <div class="container mt-4">
   <div class="card shadow-sm">
     <div class="card-header bg-primary text-white">
@@ -31,10 +32,12 @@
         <button class="btn btn-warning">Enrollment Pending</button>
         {% elif enrollment_status == 'rejected' %}
         <a href="{% url 'enroll_course' course.id %}" class="btn btn-primary">Rejected, Apply Later</a>
-
+        {% elif course.end_date < today %}
+        <a href="{% url 'course_list'%}" class="btn btn-primary">This Course has Ended</a>
         {% else %}
         <a href="{% url 'enroll_course' course.id %}" class="btn btn-primary">Enroll Now</a>
         {% endif %}
+ 
 
         {% if is_saved %}
         <a href="{% url 'toggle_save_course' course.id %}" class="btn btn-warning">Unsave</a>
