@@ -71,11 +71,22 @@ class Lesson(models.Model):
     def __str__(self):
         return f"{self.module.title} - {self.title}"
     
-class CourseComplete(models.Model):
+class LessonComplete(models.Model):
     student = models.ForeignKey(User,on_delete=models.CASCADE)
     lesson = models.ForeignKey(Lesson,on_delete=models.CASCADE)
     completed_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ('student','lesson')
+
+class CourseCompletion(models.Model):
+    course = models.ForeignKey(Course,on_delete=models.CASCADE)
+    student = models.ForeignKey(User,on_delete=models.CASCADE)
+    completed_on = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('course','student')
+
+    def __str__(self):
+        return f"{self.student.username} Completed - {self.course.title}"
         

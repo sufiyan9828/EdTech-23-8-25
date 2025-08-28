@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
-from .models import Course, Enrollment, SavedCourse,Module,Lesson,CourseComplete
+from .models import Course, Enrollment, SavedCourse,Module,Lesson,LessonComplete,CourseCompletion
 from .forms import CoursePostingForm, EnrollmentForm,ModuleForm,LessonForm
 
 def is_instructor(user):
@@ -128,6 +128,16 @@ def course_detail(request, course_id):
     is_saved = False
     enrollment_status = None
 
+    today = timezone.now().date()
+    if course.end_date < today:
+        course_status = 'ended'
+    elif course.start_date > today:
+        course_status = 'not_started'
+    else:
+        course_status = 'ongoing'
+
+    course_completed = CourseCompletion.objects.filter(student = request.user, course = course).exists()
+
     if request.user.is_authenticated and request.user.user_type == 'S':
         is_saved = SavedCourse.objects.filter(student=request.user, course=course).exists()
         enrollment = Enrollment.objects.filter(student=request.user, course=course).first()
@@ -138,10 +148,10 @@ def course_detail(request, course_id):
         'course': course,
         'is_saved': is_saved,
         'enrollment_status': enrollment_status,
+        'course_status': course_status,
+        'course_completed': course_completed
     }
     return render(request, 'courses/course_detail.html', context)
-
-
 
 @login_required
 def enroll_course(request, course_id):
@@ -160,24 +170,23 @@ def enroll_course(request, course_id):
         elif enrollment.status == 'pending':
             messages.warning(request, "You have already applied for this course!")
             return redirect('course_detail', course_id=course_id)
-        elif enrollment.status == 'rejected':
-            if request.method == 'POST':
-                form = EnrollmentForm(request.POST, instance=enrollment)
-                if form.is_valid():
-                    enrollment.status = 'pending'
-                    enrollment.save()
-                    messages.success(request, "Your enrollment request has been submitted!")
-                    return redirect('course_detail', course_id=course.id)
-                else:
-                    messages.error(request, "Error submitting enrollment. Please check the form.")
+        elif enrollment.status == 'rejected' and request.method == 'POST':
+            form = EnrollmentForm(request.POST, instance=enrollment)
+            if form.is_valid():
+                enrollment.status = 'pending'
+                enrollment.save()
+                messages.success(request, "Your enrollment request has been submitted!")
+                return redirect('course_detail', course_id=course.id)
             else:
-                form = EnrollmentForm(instance=enrollment)
+                messages.error(request, "Error submitting enrollment. Please check the form.")
+        else:
+            form = EnrollmentForm(instance=enrollment)
             
-            context = {
-                'course': course,
-                'form': form
-            }
-            return render(request, 'courses/enroll_course.html',context)
+        context = {
+            'course': course,
+            'form': form
+        }
+        return render(request, 'courses/enroll_course.html',context)
             
     
     if request.method == 'POST':
@@ -240,14 +249,14 @@ def toggle_save_course(request, course_id):
 
 def module_content(request,course_id):
     course = get_object_or_404(Course,id=course_id)
-
-    if is_student(request.user) and timezone.now().date() > course.end_date:
-        messages.error(request,f"This Course has Ended, You Can not see its content")
-        return redirect('course_detail',course_id=course.id)
     
     completed_lessons = []
+    total_lessons = Lesson.objects.filter(module__course=course).count()
+    course_completed = CourseCompletion.objects.filter(student = request.user, course = course).exists()
+    can_complete_course = False
+    
     if is_student(request.user):
-        completion = CourseComplete.objects.filter(student = request.user)
+        completion = LessonComplete.objects.filter(student = request.user,lesson__module__course = course)
         for c in completion:
             completed_lessons.append(c.lesson.id)
 
@@ -255,11 +264,19 @@ def module_content(request,course_id):
         if not enrollment:
             messages.success(request,f"You are not enrolled in this course")
             return redirect('course_detail', course_id=course.id)
+        
+    
+    if total_lessons > 0 and len(completed_lessons) == total_lessons:
+        can_complete_course = True
+
     modules = course.modules.prefetch_related("lessons").all()
     context = {
-        'course':course,
+        'course': course,
         'modules': modules,
-        'completed_lessons': completed_lessons
+        'completed_lessons': completed_lessons,
+        'can_complete_course': can_complete_course,
+        'total_lessons': total_lessons,
+        'course_completed': course_completed
     }
     return render(request,"courses/module_content.html",context)
         
@@ -291,7 +308,7 @@ def add_module(request,course_id):
     }
     return render(request,'courses/add_module.html',context)
 
-
+@login_required
 def add_lesson(request,module_id):
     if not is_instructor(request.user):
         messages.error(request, "Only instructors can manage Module.")
@@ -318,6 +335,7 @@ def add_lesson(request,module_id):
         }
         return render(request,"courses/add_lesson.html",context)
     
+@login_required
 def mark_lesson_completed(request,lesson_id):
     if not is_student(request.user):
         messages.error(request,f"Only Students can Complete Course")
@@ -325,7 +343,28 @@ def mark_lesson_completed(request,lesson_id):
     
     lesson = get_object_or_404(Lesson,id=lesson_id)
 
-    CourseComplete.objects.get_or_create(student = request.user, lesson = lesson)
+    LessonComplete.objects.get_or_create(student = request.user, lesson = lesson)
     messages.success(request,f"Marked {lesson.title}-Completed")
     return redirect('module_content',course_id = lesson.module.course.id)
 
+@login_required
+def mark_course_completed(request,course_id):
+    course = get_object_or_404(Course,id=course_id)
+    
+    if not is_student(request.user):
+        messages.error(request,f"Only Students can Complete Course")
+        return redirect('home')
+    
+    
+    
+    lessons = Lesson.objects.filter(module__course = course)
+    completed = LessonComplete.objects.filter(student=request.user,lesson__in = lessons).count()
+
+    if completed < lessons.count():
+        messages.error(request,"You Must Complete all Lessons to Finish Course")
+        return redirect('module_content',course_id=course.id)
+    else:
+        CourseCompletion.objects.get_or_create(student = request.user,course=course)
+        messages.success(request,f"Congratulation Course Finished")
+        return redirect('course_detail',course_id=course.id)
+    
