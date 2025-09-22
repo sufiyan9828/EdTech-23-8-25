@@ -144,7 +144,6 @@ def user_profile_view(request, user_id):
     }
     return render(request, 'accounts/user_profile.html', context)
 
-<<<<<<< HEAD
 
 def instructor_profile_view(request, user_id):
     instructor = get_object_or_404(User, id=user_id, user_type='I')
@@ -157,5 +156,3 @@ def instructor_profile_view(request, user_id):
         'instructor_profile': instructor_profile,
     }
     return render(request, 'accounts/instructor_profile.html', context)
-=======
->>>>>>> 0306852464c31f547468529447e570b6a5fb907c

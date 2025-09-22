@@ -17,10 +17,10 @@
             </div>
             <p class="mb-1">{{ course.description|truncatewords:20 }}</p>
             <small class="text-muted">
-                {% if course.pending_count %}
-                    {{ course.pending_count }} pending enrollments 
+                {% if course.enrollment_count %}
+                    {{ course.enrollment_count }} enrollments 
                 {% else %}
-                    No pending enrollments yet
+                    No enrollments yet
                 {% endif %}
             </small>
             <a href="{% url 'view_enrollments' course.id %}" class="btn btn-sm btn-info float-end">Manage Enrollments</a>

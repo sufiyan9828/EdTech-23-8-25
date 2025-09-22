@@ -37,15 +37,9 @@ class User(AbstractUser):
 class StudentProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     educations = models.CharField(max_length=200, blank=True)
-<<<<<<< HEAD
     institution_name = models.CharField(max_length=200, blank=True) 
     current_year = models.CharField(max_length=200, blank=True) 
     student_id = models.CharField(max_length=50, blank=True, null=True) 
-=======
-    skills = models.CharField(max_length=200, blank=True)
-    experience = models.CharField(max_length=200, blank=True)
-    resume = models.FileField(upload_to='resumes/', blank=True, null=True)
->>>>>>> 0306852464c31f547468529447e570b6a5fb907c
     profile_photo = models.ImageField(
         upload_to=get_profile_photo_path,
         blank=True,
@@ -62,7 +56,3 @@ class InstructorProfile(models.Model):
         blank=True,
         null=True,
     )
-<<<<<<< HEAD
-=======
-
->>>>>>> 0306852464c31f547468529447e570b6a5fb907c

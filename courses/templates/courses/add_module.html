@@ -2,11 +2,11 @@
 {% block main %}
 <h2>Add Module for {{ course.title }}</h2>
 
-<form method="POST">
+<form action="" method="POST">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit" class="btn btn-primary">Add Module</button>
 </form>
 
-<a href="{% url 'module_content' course.id %}">Back to Module</a>
+<a href="{% url 'module_content' course.id %}" class="btn btn-success float-end">Back to Module</a>
 {% endblock %}

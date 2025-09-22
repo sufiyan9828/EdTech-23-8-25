@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% block main %}
 <div class="container my-5">
-<<<<<<< HEAD
     <!-- Hero Section -->
     <div class="hero-section bg-light p-5 rounded-3 mb-5 shadow-sm text-center">
         <h1 class="fw-bold">Welcome to <span style="color:#007bff;">BrightLearn</span></h1>
@@ -41,36 +40,16 @@
         {% for course in courses|slice:":3" %}
         <div class="col">
             <div class="card h-100 shadow-sm border-0">
-=======
-    <div class="hero-section bg-light p-5 rounded-3 mb-5">
-        <h1>Welcome to Our EdTech Platform</h1>
-        <p class="lead">Learn new skills from expert instructors and advance your career</p>
-        <a href="{% url 'register' %}" class="btn btn-primary btn-lg">Get Started</a>
-    </div>
-
-    <h2 class="mb-4">Courses Catalog</h2>
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        {% for course in courses|slice:":3" %}
-        <div class="col">
-            <div class="card h-100">
->>>>>>> 0306852464c31f547468529447e570b6a5fb907c
                 {% if course.image %}
                 <img src="{{ course.image.url }}" class="card-img-top" alt="{{ course.title }}">
                 {% else %}
                 <div class="card-img-top bg-secondary text-white p-5 text-center">No Image</div>
                 {% endif %}
                 <div class="card-body">
-<<<<<<< HEAD
                     <h5 class="card-title fw-bold">{{ course.title }}</h5>
                     <p class="card-text">{{ course.description|truncatechars:100 }}</p>
                     <div class="d-flex justify-content-between align-items-center mt-3">
                         <small class="text-muted">By {{ course.instructor.username }}</small>
-=======
-                    <h5 class="card-title">{{ course.title }}</h5>
-                    <p class="card-text">{{ course.description|truncatechars:100 }}</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-muted">{{ course.instructor.username }}</small>
->>>>>>> 0306852464c31f547468529447e570b6a5fb907c
                         <a href="{% url 'course_detail' course.id %}" class="btn btn-sm btn-outline-primary">View Details</a>
                     </div>
                 </div>
@@ -83,7 +62,6 @@
         {% endfor %}
     </div>
 </div>
-<<<<<<< HEAD
 
 <!-- Footer Section -->
 <footer class="mt-5 bg-dark text-light py-4">
@@ -100,7 +78,3 @@
     </div>
 </footer>
 {% endblock %}
-=======
-{% endblock %}
-
->>>>>>> 0306852464c31f547468529447e570b6a5fb907c

@@ -19,15 +19,12 @@ class Enrollment(models.Model):
     STATUS_CHOICES = (
         ('pending', 'Pending'),
         ('enrolled', 'Enrolled'),
-        ('accepted', 'Accepted'),
-        ('rejected', 'Rejected'),
     )
 
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='enrollments')
     student = models.ForeignKey(User, on_delete=models.CASCADE)
     enrollment_date = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='enrolled')
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     notes = models.TextField(blank=True,null=True)
 
     class Meta:

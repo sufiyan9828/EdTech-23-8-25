@@ -7,21 +7,14 @@
         </div>
         <div class="card-body">
             <div class="row">
-<<<<<<< HEAD
                 <div class="col-md-4 text-center">
                     <div class="mb-4">
                         <img src="{{ user.get_profile_photo_url }}" class="rounded-circle border border-primary p-1" width="150" height="150" alt="Profile Photo" style="object-fit: cover;">
-=======
-                <div class="col-md-4">
-                    <div class="text-center mb-4">
-                        <img src="{{ user.get_profile_photo_url }}" class="rounded-circle" width="150" height="150" alt="Profile Photo">
->>>>>>> 0306852464c31f547468529447e570b6a5fb907c
                     </div>
                 </div>
                 <div class="col-md-8">
                     <form method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
-<<<<<<< HEAD
                         <div class="mb-3">
                             <label for="{{ form.profile_photo.id_for_label }}" class="form-label">Profile Photo</label>
                             {{ form.profile_photo }}
@@ -34,17 +27,6 @@
                             {% if field.name != 'profile_photo' %}
                                 <div class="mb-3">
                                     <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-=======
-                        <div class="form-group mb-3">
-                            <label class="form-label">Profile Photo</label>
-                            {{ form.profile_photo }}
-                            <small class="form-text text-muted">Upload a new profile photo</small>
-                        </div>
-                        {% for field in form %}
-                            {% if field.name != 'profile_photo' %}
-                                <div class="form-group mb-3">
-                                    <label class="form-label">{{ field.label }}</label>
->>>>>>> 0306852464c31f547468529447e570b6a5fb907c
                                     {{ field }}
                                     {% if field.errors %}
                                         <div class="text-danger">{{ field.errors }}</div>
@@ -53,11 +35,7 @@
                             {% endif %}
                         {% endfor %}
                         <button type="submit" class="btn btn-primary">Save Changes</button>
-<<<<<<< HEAD
                         <a href="{% url 'profile_details' %}" class="btn btn-secondary ms-2">Cancel</a>
-=======
-                        <a href="{% url 'profile_details' %}" class="btn btn-secondary">Cancel</a>
->>>>>>> 0306852464c31f547468529447e570b6a5fb907c
                     </form>
                 </div>
             </div>
@@ -65,7 +43,3 @@
     </div>
 </div>
 {% endblock %}
-<<<<<<< HEAD
-
-=======
->>>>>>> 0306852464c31f547468529447e570b6a5fb907c

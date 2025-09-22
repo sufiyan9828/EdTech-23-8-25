@@ -1,51 +1,27 @@
-<<<<<<< HEAD
-=======
-{# MainProject/accounts/templates/accounts/user_profile.html #}
->>>>>>> 0306852464c31f547468529447e570b6a5fb907c
 {% extends 'base.html' %}
 {% block main %}
 <div class="container mt-5">
     <div class="card shadow-sm">
         
-<<<<<<< HEAD
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h2 class="mb-0">Profile: {{ user_obj.username }}</h2>
             {% if user_obj == request.user %}
                 <a href="{% url 'profile_update' %}" class="btn btn-light btn-sm">Edit Profile</a>
             {% endif %}
-=======
-        <div class="card-header bg-primary text-white">
-            <div class="d-flex justify-content-between align-items-center">
-                <h2 class="mb-0">Profile: {{ user_obj.username }}</h2>
-                {% if user_obj == request.user %}
-                    <a href="{% url 'profile_update' %}" class="btn btn-light">Edit Profile</a>
-                {% endif %}
-            </div>
->>>>>>> 0306852464c31f547468529447e570b6a5fb907c
         </div>
 
        
         <div class="card-body">
-<<<<<<< HEAD
             <div class="row mb-4 align-items-center">
                 
                 <div class="col-md-3 text-center">
                     <img src="{{ user_obj.get_profile_photo_url }}"
                          class="rounded-circle border border-primary p-1"
                          width="150" height="150" alt="Profile Photo" style="object-fit: cover;">
-=======
-            <div class="row mb-4">
-                
-                <div class="col-md-3 text-center">
-                    <img src="{{ user_obj.get_profile_photo_url }}"
-                         class="rounded-circle mb-3"
-                         width="150" height="150" alt="Profile Photo">
->>>>>>> 0306852464c31f547468529447e570b6a5fb907c
                 </div>
 
                 
                 <div class="col-md-9">
-<<<<<<< HEAD
                     <div class="row mb-2">
                         <div class="col-md-4 text-muted"><strong>Name:</strong></div>
                         <div class="col-md-8">{{ user_obj.name }}</div>
@@ -64,26 +40,6 @@
                     </div>
                     <div class="row mb-2">
                         <div class="col-md-4 text-muted"><strong>User Type:</strong></div>
-=======
-                    <div class="row mb-3">
-                        <div class="col-md-4"><strong>Name:</strong></div>
-                        <div class="col-md-8">{{ user_obj.name }}</div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-4"><strong>Username:</strong></div>
-                        <div class="col-md-8">{{ user_obj.username }}</div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-4"><strong>Email:</strong></div>
-                        <div class="col-md-8">{{ user_obj.email }}</div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-4"><strong>Contact:</strong></div>
-                        <div class="col-md-8">{{ user_obj.contact }}</div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-4"><strong>User Type:</strong></div>
->>>>>>> 0306852464c31f547468529447e570b6a5fb907c
                         <div class="col-md-8">
                             {% if user_obj.user_type == 'S' %} Student
                             {% elif user_obj.user_type == 'I' %} Instructor
@@ -96,7 +52,6 @@
 
            
             {% if user_obj.user_type == 'S' and profile %}
-<<<<<<< HEAD
             <hr class="my-4">
             <h4 class="mb-3">Student Specific Details</h4>
             <div class="row mb-2">
@@ -115,40 +70,10 @@
                 <div class="col-md-4 text-muted"><strong>Student ID:</strong></div>
                 <div class="col-md-8">{{ profile.student_id|default:"N/A" }}</div>
             </div>
-=======
-            <hr>
-            <h4>Student Specific Details</h4>
-            <div class="row mb-3">
-                <div class="col-md-4"><strong>Education:</strong></div>
-                <div class="col-md-8">{{ profile.educations|default:"N/A" }}</div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-md-4"><strong>Skills:</strong></div>
-                <div class="col-md-8">{{ profile.skills|default:"N/A" }}</div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-md-4"><strong>Experience:</strong></div>
-                <div class="col-md-8">{{ profile.experience|default:"N/A" }}</div>
-            </div>
-            {% if profile.resume %}
-            <div class="row mb-3">
-                <div class="col-md-4"><strong>Resume:</strong></div>
-                <div class="col-md-8">
-                    <a href="{{ profile.resume.url }}" target="_blank" class="btn btn-sm btn-info">View Resume</a>
-                </div>
-            </div>
-            {% else %}
-            <div class="row mb-3">
-                <div class="col-md-4"><strong>Resume:</strong></div>
-                <div class="col-md-8">No resume uploaded</div>
-            </div>
-            {% endif %}
->>>>>>> 0306852464c31f547468529447e570b6a5fb907c
             {% endif %}
 
           
             {% if user_obj.user_type == 'I' and profile %}
-<<<<<<< HEAD
             <hr class="my-4">
             <h4 class="mb-3">Instructor Specific Details</h4>
             <div class="row mb-2">
@@ -157,33 +82,15 @@
             </div>
             <div class="row mb-2">
                 <div class="col-md-4 text-muted"><strong>Organization Contact:</strong></div>
-=======
-            <hr>
-            <h4>Instructor Specific Details</h4>
-            <div class="row mb-3">
-                <div class="col-md-4"><strong>Organization Name:</strong></div>
-                <div class="col-md-8">{{ profile.organization_name|default:"N/A" }}</div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-md-4"><strong>Organization Contact:</strong></div>
->>>>>>> 0306852464c31f547468529447e570b6a5fb907c
                 <div class="col-md-8">{{ profile.contact|default:"N/A" }}</div>
             </div>
             {% endif %}
 
            
-<<<<<<< HEAD
             <div class="mt-4 text-center">
-=======
-            <div class="mt-4">
->>>>>>> 0306852464c31f547468529447e570b6a5fb907c
                 <a href="{% url 'home' %}" class="btn btn-secondary">Back to Home</a>
             </div>
         </div>
     </div>
 </div>
 {% endblock main %}
-<<<<<<< HEAD
-
-=======
->>>>>>> 0306852464c31f547468529447e570b6a5fb907c

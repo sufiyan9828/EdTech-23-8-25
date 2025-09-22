@@ -14,10 +14,6 @@
                 <th>Student Name</th>
                 <th>Enrollment Date</th>
                 <th>Status</th> 
-<<<<<<< HEAD
-=======
-                <th>Actions</th>
->>>>>>> 0306852464c31f547468529447e570b6a5fb907c
               </tr>
             </thead>
             <tbody>
@@ -26,34 +22,12 @@
                 <td>{{ enrollment.student.username }}</td>
                 <td>{{ enrollment.enrollment_date|date:"M d, Y" }}</td>
                 <td>
-<<<<<<< HEAD
                   {% if enrollment.status == 'enrolled' %} 
                     <span class="badge bg-success">Enrolled</span>
-=======
-                  {% if enrollment.status == 'accepted' %} 
-                    <span class="badge bg-success">Accepted</span>
-                  {% elif enrollment.status == 'rejected' %}
-                    <span class="badge bg-danger">Rejected</span>
->>>>>>> 0306852464c31f547468529447e570b6a5fb907c
                   {% else %}
                     <span class="badge bg-warning">Pending</span>
                   {% endif %}
                 </td>
-<<<<<<< HEAD
-=======
-                <td>
-                  {% if enrollment.status == 'pending' %}
-                  <form action="{% url 'accept_enrollment' enrollment.id %}" method="POST" class="d-inline">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-success">Accept</button>
-                  </form>
-                  <form action="{% url 'reject_enrollment' enrollment.id %}" method="POST" class="d-inline ms-2"> {# Added reject button #}
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-danger">Reject</button>
-                  </form>
-                  {% endif %}
-                </td>
->>>>>>> 0306852464c31f547468529447e570b6a5fb907c
               </tr>
               {% endfor %}
             </tbody>
